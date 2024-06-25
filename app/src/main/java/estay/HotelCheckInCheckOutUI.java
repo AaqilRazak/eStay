@@ -39,11 +39,4 @@ public class HotelCheckInCheckOutUI extends JFrame {
     public void showPanel(String panelName) {
         cardLayout.show(mainPanel, panelName);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
-            ui.setVisible(true);
-        });
-    }
 }
