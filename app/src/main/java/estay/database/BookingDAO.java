@@ -9,10 +9,18 @@ public class BookingDAO {
     public static class BookingInfo {
         public String status;
         public java.sql.Timestamp expiration;
+        public double dayRate;
+        public java.sql.Timestamp checkInDate;
+        public double accumulatedCost;
+        public String roomId;
 
-        public BookingInfo(String status, java.sql.Timestamp expiration) {
+        public BookingInfo(String status, java.sql.Timestamp expiration, double dayRate, java.sql.Timestamp checkInDate, double accumulatedCost, String roomId) {
             this.status = status;
             this.expiration = expiration;
+            this.dayRate = dayRate;
+            this.checkInDate = checkInDate;
+            this.accumulatedCost = accumulatedCost;
+            this.roomId = roomId;
         }
     }
 
@@ -29,7 +37,7 @@ public class BookingDAO {
     }
 
     public BookingInfo validateUser(String bookingCode, String creditCardLast4) {
-        String query = "SELECT status, expiration FROM bookings WHERE booking_id = ? AND credit_card_last4 = ?";
+        String query = "SELECT status, expiration, day_rate, check_in_date, accumulated_cost, room_id FROM bookings WHERE booking_id = ? AND credit_card_last4 = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, bookingCode);
@@ -38,7 +46,11 @@ public class BookingDAO {
             if (resultSet.next()) {
                 String status = resultSet.getString("status");
                 java.sql.Timestamp expiration = resultSet.getTimestamp("expiration");
-                return new BookingInfo(status, expiration);
+                double dayRate = resultSet.getDouble("day_rate");
+                java.sql.Timestamp checkInDate = resultSet.getTimestamp("check_in_date");
+                double accumulatedCost = resultSet.getDouble("accumulated_cost");
+                String roomId = resultSet.getString("room_id");
+                return new BookingInfo(status, expiration, dayRate, checkInDate, accumulatedCost, roomId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -79,5 +91,37 @@ public class BookingDAO {
             e.printStackTrace();
         }
         return false;
+    }
+public BookingInfo getBookingDetails(String bookingCode) {
+        String query = "SELECT status, expiration, day_rate, check_in_date, accumulated_cost, room_id FROM bookings WHERE booking_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, bookingCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String status = resultSet.getString("status");
+                java.sql.Timestamp expiration = resultSet.getTimestamp("expiration");
+                double dayRate = resultSet.getDouble("day_rate");
+                java.sql.Timestamp checkInDate = resultSet.getTimestamp("check_in_date");
+                double accumulatedCost = resultSet.getDouble("accumulated_cost");
+                String roomId = resultSet.getString("room_id");
+                return new BookingInfo(status, expiration, dayRate, checkInDate, accumulatedCost, roomId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateAccumulatedCost(String bookingCode, double additionalCost) {
+        String query = "UPDATE bookings SET accumulated_cost = accumulated_cost + ? WHERE booking_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setDouble(1, additionalCost);
+            preparedStatement.setString(2, bookingCode);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
