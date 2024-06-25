@@ -3,12 +3,19 @@
  */
 package estay;
 
+import javax.swing.SwingUtilities;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
+                ui.setVisible(true);
+            }
+        });
     }
 }
