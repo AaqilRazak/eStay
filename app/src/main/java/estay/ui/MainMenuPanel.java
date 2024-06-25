@@ -19,10 +19,6 @@ public class MainMenuPanel extends JPanel {
         JLabel timeLabel = new JLabel("Current Time: " + currentTime);
         add(timeLabel);
 
-        // Buttons
-        JButton checkInButton = new JButton("Check-In");
-        checkInButton.addActionListener(e -> parent.showPanel("Check In"));
-        add(checkInButton);
 
         JButton checkOutButton = new JButton("Check-Out");
         checkOutButton.addActionListener(e -> parent.showPanel("Check Out"));

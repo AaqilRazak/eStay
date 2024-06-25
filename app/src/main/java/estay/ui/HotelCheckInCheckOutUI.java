@@ -2,11 +2,12 @@ package estay.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import estay.*;
+import estay.database.BookingDAO;
 
 public class HotelCheckInCheckOutUI extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
+    private CheckInPanel checkInPanel;
 
     public HotelCheckInCheckOutUI() {
         setTitle("Hotel Check-In and Check-Out System");
@@ -18,7 +19,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
         // Initialize panels
         JPanel loginPanel = new LoginPanel(this);
         JPanel mainMenuPanel = new MainMenuPanel(this);
-        JPanel checkInPanel = new CheckInPanel(this);
+        checkInPanel = new CheckInPanel(this);
         JPanel keyCodePanel = new KeyCodePanel(this);
         JPanel checkOutPanel = new CheckOutPanel(this);
         JPanel requestPanel = new RequestPanel(this);
@@ -41,12 +42,13 @@ public class HotelCheckInCheckOutUI extends JFrame {
         cardLayout.show(mainPanel, panelName);
     }
 
-    public void handleBookingStatus(String bookingStatus, java.sql.Timestamp expiration) {
+    public void handleBookingStatus(String bookingStatus, java.sql.Timestamp expiration, String bookingCode) {
         java.sql.Timestamp currentTime = new java.sql.Timestamp(System.currentTimeMillis());
         long timeDifference = expiration.getTime() - currentTime.getTime();
         long twoHoursInMillis = 2 * 60 * 60 * 1000;
 
         if (bookingStatus.equals("not checked in")) {
+            checkInPanel.setBookingCode(bookingCode); // Set the booking code before showing the Check In panel
             showPanel("Check In");
         } else if (bookingStatus.equals("checked in") && timeDifference > twoHoursInMillis) {
             showPanel("Request");

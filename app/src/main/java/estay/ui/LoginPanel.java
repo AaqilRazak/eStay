@@ -36,13 +36,15 @@ public class LoginPanel extends JPanel {
     private void handleLogin(HotelCheckInCheckOutUI parent) {
         String bookingCode = codeField.getText();
         String creditCardLast4 = creditCardField.getText();
-
-        BookingDAO.BookingInfo bookingInfo = userDAO.validateUser(bookingCode, creditCardLast4);
+    
+        BookingDAO bookingDAO = new BookingDAO();
+        BookingDAO.BookingInfo bookingInfo = bookingDAO.validateUser(bookingCode, creditCardLast4);
         if (bookingInfo != null) {
-            JOptionPane.showMessageDialog(this, "Check-In Successful!");
-            parent.handleBookingStatus(bookingInfo.status, bookingInfo.expiration);
+            parent.handleBookingStatus(bookingInfo.status, bookingInfo.expiration, bookingCode);
         } else {
             JOptionPane.showMessageDialog(this, "Invalid details. Please try again.");
         }
     }
+    
+    
 }
