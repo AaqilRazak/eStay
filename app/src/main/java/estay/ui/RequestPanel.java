@@ -64,6 +64,7 @@ public class RequestPanel extends JPanel {
 
     public void setBookingCode(String bookingCode) {
         this.bookingCode = bookingCode;
+        System.out.println("Booking code set to: " + bookingCode); // Debug statement
         BookingDAO.GuestInfo guestInfo = bookingDAO.getSecurityQuestions(bookingCode);
         if (guestInfo != null) {
             guestName = guestInfo.name;
@@ -72,11 +73,13 @@ public class RequestPanel extends JPanel {
     }
 
     private void handleSubmit() {
+        System.out.println("Submitting service request for booking code: " + bookingCode); // Debug statement
         double totalCost = 0.0;
         for (int i = 0; i < serviceCheckBoxes.length; i++) {
             if (serviceCheckBoxes[i].isSelected()) {
                 String requestType = serviceCheckBoxes[i].getText();
                 double price = Double.parseDouble(priceFields[i].getText().replace("$", ""));
+                System.out.println("Selected service: " + requestType + " with price: " + price); // Debug statement
                 bookingDAO.saveServiceRequest(bookingCode, requestType, price);
                 totalCost += price;
             }
