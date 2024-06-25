@@ -2,19 +2,87 @@ package estay.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import estay.database.BookingDAO;
 
 public class RequestPanel extends JPanel {
+    private JLabel nameLabel;
+    private JCheckBox[] serviceCheckBoxes;
+    private JTextField[] priceFields;
+    private JButton submitButton;
+    private JButton backButton;
+    private HotelCheckInCheckOutUI parent;
+    private BookingDAO bookingDAO;
+    private String bookingCode;
+    private String guestName;
+
     public RequestPanel(HotelCheckInCheckOutUI parent) {
-        setLayout(new GridLayout(3, 1));
-        add(new JLabel("Please enter your request"));
-        add(new JTextArea());
+        this.parent = parent;
+        this.bookingDAO = new BookingDAO();
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        JButton submitButton = new JButton("Submit");
-        add(submitButton);
+        nameLabel = new JLabel();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        add(nameLabel, gbc);
 
-        JButton backButton = new JButton("Back to Main Menu");
+        List<BookingDAO.ServiceOffering> offerings = bookingDAO.getServiceOfferings();
+        serviceCheckBoxes = new JCheckBox[offerings.size()];
+        priceFields = new JTextField[offerings.size()];
+
+        gbc.gridwidth = 1;
+
+        for (int i = 0; i < offerings.size(); i++) {
+            BookingDAO.ServiceOffering offering = offerings.get(i);
+            serviceCheckBoxes[i] = new JCheckBox(offering.requestType);
+            priceFields[i] = new JTextField(String.format("$%.2f", offering.price));
+            priceFields[i].setEditable(false);
+
+            gbc.gridx = 0;
+            gbc.gridy = i + 1;
+            add(serviceCheckBoxes[i], gbc);
+
+            gbc.gridx = 1;
+            add(priceFields[i], gbc);
+        }
+
+        submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> handleSubmit());
+        gbc.gridx = 0;
+        gbc.gridy = offerings.size() + 1;
+        gbc.gridwidth = 1;
+        add(submitButton, gbc);
+
+        backButton = new JButton("Back to Main Menu");
         backButton.addActionListener(e -> parent.showPanel("Main Menu"));
-        add(backButton);
+        gbc.gridx = 1;
+        add(backButton, gbc);
+    }
 
+    public void setBookingCode(String bookingCode) {
+        this.bookingCode = bookingCode;
+        BookingDAO.GuestInfo guestInfo = bookingDAO.getSecurityQuestions(bookingCode);
+        if (guestInfo != null) {
+            guestName = guestInfo.name;
+            nameLabel.setText("Hello, " + guestName + "! Please select your service requests:");
+        }
+    }
+
+    private void handleSubmit() {
+        double totalCost = 0.0;
+        for (int i = 0; i < serviceCheckBoxes.length; i++) {
+            if (serviceCheckBoxes[i].isSelected()) {
+                String requestType = serviceCheckBoxes[i].getText();
+                double price = Double.parseDouble(priceFields[i].getText().replace("$", ""));
+                bookingDAO.saveServiceRequest(bookingCode, requestType, price);
+                totalCost += price;
+            }
+        }
+        bookingDAO.updateAccumulatedCost(bookingCode, totalCost);
+        JOptionPane.showMessageDialog(this, "Thank you! Your request has been submitted.");
+        parent.showPanel("Main Menu");
     }
 }

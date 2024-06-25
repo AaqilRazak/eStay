@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookingDAO {
+
     public static class BookingInfo {
         public String status;
         public java.sql.Timestamp expiration;
@@ -25,6 +28,16 @@ public class BookingDAO {
             this.name = name;
             this.securityQuestion1 = securityQuestion1;
             this.securityQuestion2 = securityQuestion2;
+        }
+    }
+
+    public static class ServiceOffering {
+        public String requestType;
+        public double price;
+
+        public ServiceOffering(String requestType, double price) {
+            this.requestType = requestType;
+            this.price = price;
         }
     }
 
@@ -79,5 +92,47 @@ public class BookingDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<ServiceOffering> getServiceOfferings() {
+        List<ServiceOffering> offerings = new ArrayList<>();
+        String query = "SELECT request_type, price FROM servicerequests";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String requestType = resultSet.getString("request_type");
+                double price = resultSet.getDouble("price");
+                offerings.add(new ServiceOffering(requestType, price));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return offerings;
+    }
+
+    public void saveServiceRequest(String bookingCode, String requestType, double price) {
+        String query = "INSERT INTO servicerequests (booking_id, request_type, request_date, status, price) VALUES (?, ?, NOW(), 'pending', ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, bookingCode);
+            preparedStatement.setString(2, requestType);
+            preparedStatement.setDouble(3, price);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateAccumulatedCost(String bookingCode, double additionalCost) {
+        String query = "UPDATE bookings SET accumulated_cost = accumulated_cost + ? WHERE booking_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setDouble(1, additionalCost);
+            preparedStatement.setString(2, bookingCode);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
