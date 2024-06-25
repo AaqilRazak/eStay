@@ -2,6 +2,7 @@ package estay.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import estay.*;
 
 public class HotelCheckInCheckOutUI extends JFrame {
     private CardLayout cardLayout;
@@ -38,5 +39,26 @@ public class HotelCheckInCheckOutUI extends JFrame {
 
     public void showPanel(String panelName) {
         cardLayout.show(mainPanel, panelName);
+    }
+
+    public void handleBookingStatus(String bookingStatus, java.sql.Timestamp expiration) {
+        java.sql.Timestamp currentTime = new java.sql.Timestamp(System.currentTimeMillis());
+        long timeDifference = expiration.getTime() - currentTime.getTime();
+        long twoHoursInMillis = 2 * 60 * 60 * 1000;
+
+        if (bookingStatus.equals("not checked in")) {
+            showPanel("Check In");
+        } else if (bookingStatus.equals("checked in") && timeDifference > twoHoursInMillis) {
+            showPanel("Request");
+        } else if (bookingStatus.equals("checked in") && timeDifference <= twoHoursInMillis) {
+            showPanel("Check Out");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
+            ui.setVisible(true);
+        });
     }
 }
