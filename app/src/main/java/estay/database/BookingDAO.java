@@ -17,7 +17,7 @@ public class BookingDAO {
     }
 
     public BookingInfo validateUser(String bookingCode, String creditCardLast4) {
-        String query = "SELECT status, expiration FROM bookings WHERE booking_id = ? AND payment_method_id = ?";
+        String query = "SELECT status, expiration FROM bookings WHERE booking_id = ? AND credit_card_last4 = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, bookingCode);

@@ -3,6 +3,7 @@ package estay.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.*;
 
 public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://69.215.107.194:3306/eStayDB";
