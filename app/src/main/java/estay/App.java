@@ -5,6 +5,9 @@ package estay;
 
 import javax.swing.SwingUtilities;
 
+import estay.database.DatabaseConnection;
+import estay.ui.HotelCheckInCheckOutUI;
+
 public class App {
     public String getGreeting() {
         DatabaseConnection connection = new DatabaseConnection();

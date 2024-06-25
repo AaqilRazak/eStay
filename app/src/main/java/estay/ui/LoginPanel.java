@@ -1,0 +1,48 @@
+package estay.ui;
+
+import javax.swing.*;
+
+import estay.database.BookingDAO;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class LoginPanel extends JPanel {
+    private JTextField codeField;
+    private JTextField creditCardField;
+    private BookingDAO userDAO;
+
+    public LoginPanel(HotelCheckInCheckOutUI parent) {
+        userDAO = new BookingDAO();
+        setLayout(new GridLayout(4, 1));
+        add(new JLabel("Booking Code:"));
+        codeField = new JTextField();
+        add(codeField);
+        add(new JLabel("Last 4 Digits of Credit Card:"));
+        creditCardField = new JTextField();
+        add(creditCardField);
+        JButton loginButton = new JButton("Login");
+        add(loginButton);
+
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleLogin(parent);
+            }
+        });
+    }
+
+    private void handleLogin(HotelCheckInCheckOutUI parent) {
+        String bookingCode = codeField.getText();
+        String creditCardLast4 = creditCardField.getText();
+
+        BookingDAO.BookingInfo bookingInfo = userDAO.validateUser(bookingCode, creditCardLast4);
+        if (bookingInfo != null) {
+            JOptionPane.showMessageDialog(this, "Check-In Successful!");
+            parent.handleBookingStatus(bookingInfo.status, bookingInfo.expiration);
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid details. Please try again.");
+        }
+    }
+}

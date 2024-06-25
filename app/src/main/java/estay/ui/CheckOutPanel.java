@@ -1,4 +1,4 @@
-package estay;
+package estay.ui;
 
 import javax.swing.*;
 import java.awt.*;
