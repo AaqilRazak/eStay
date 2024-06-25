@@ -16,6 +16,18 @@ public class BookingDAO {
         }
     }
 
+    public static class GuestInfo {
+        public String name;
+        public String securityQuestion1;
+        public String securityQuestion2;
+
+        public GuestInfo(String name, String securityQuestion1, String securityQuestion2) {
+            this.name = name;
+            this.securityQuestion1 = securityQuestion1;
+            this.securityQuestion2 = securityQuestion2;
+        }
+    }
+
     public BookingInfo validateUser(String bookingCode, String creditCardLast4) {
         String query = "SELECT status, expiration FROM bookings WHERE booking_id = ? AND credit_card_last4 = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -32,5 +44,40 @@ public class BookingDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public GuestInfo getSecurityQuestions(String bookingCode) {
+        String query = "SELECT name, security_question_1, security_question_2 FROM guests WHERE guest_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, bookingCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String question1 = resultSet.getString("security_question_1");
+                String question2 = resultSet.getString("security_question_2");
+                return new GuestInfo(name, question1, question2);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean validateSecurityAnswers(String bookingCode, String answer1, String answer2) {
+        String query = "SELECT security_answer_1, security_answer_2 FROM guests WHERE guest_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, bookingCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String correctAnswer1 = resultSet.getString("security_answer_1");
+                String correctAnswer2 = resultSet.getString("security_answer_2");
+                return correctAnswer1.equalsIgnoreCase(answer1) && correctAnswer2.equalsIgnoreCase(answer2);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
