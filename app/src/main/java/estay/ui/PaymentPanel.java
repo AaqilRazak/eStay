@@ -46,6 +46,11 @@ public class PaymentPanel extends JPanel {
             clearData(); // Clear data when going back to login
         });
         add(backButton, gbc);
+
+        // Logout button
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        add(logoutButton, gbc);
     }
 
     public void setBookingCode(String bookingCode) {

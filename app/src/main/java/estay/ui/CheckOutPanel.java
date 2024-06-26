@@ -68,6 +68,11 @@ public class CheckOutPanel extends JPanel {
         });
         buttonPanel.add(serviceRequestsButton, buttonGbc);
 
+        buttonGbc.gridy = 2;
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        buttonPanel.add(logoutButton, buttonGbc);
+
         add(buttonPanel, BorderLayout.SOUTH);
     }
 

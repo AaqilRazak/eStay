@@ -71,13 +71,19 @@ public class RequestPanel extends JPanel {
         gbc.gridwidth = 1;
         inputPanel.add(submitButton, gbc);
 
-        backButton = new JButton("Back to Welcome");
+        backButton = new JButton("Back to Main Menu");
         backButton.addActionListener(e -> {
-            parent.showPanel("Welcome");
-            updateRequestDisplay(); // Update the request display when navigating back to the welcome screen
+            parent.showPanel("Main Menu");
+            updateRequestDisplay(); // Update the request display when navigating back to the main menu
         });
         gbc.gridx = 2;
         inputPanel.add(backButton, gbc);
+
+        // Logout button
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        gbc.gridx = 3;
+        inputPanel.add(logoutButton, gbc);
 
         add(inputPanel, BorderLayout.NORTH);
 
@@ -150,7 +156,6 @@ public class RequestPanel extends JPanel {
         JOptionPane.showMessageDialog(this, "Thank you! Your request has been submitted.");
         updateRequestDisplay();
     }
-    
 
     public void updateRequestDisplay() {
         if (bookingCode == null) {

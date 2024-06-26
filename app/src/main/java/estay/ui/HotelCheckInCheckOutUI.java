@@ -13,6 +13,8 @@ public class HotelCheckInCheckOutUI extends JFrame {
     private PaymentPanel paymentPanel;
     private RequestPanel requestPanel;
     private WelcomePanel welcomePanel;
+    private KeyCodePanel keyCodePanel;
+    private AdminPanel adminPanel;
     private String currentBookingCode;
 
     public HotelCheckInCheckOutUI() {
@@ -29,14 +31,18 @@ public class HotelCheckInCheckOutUI extends JFrame {
         welcomePanel = new WelcomePanel(this);
         checkOutPanel = new CheckOutPanel(this);
         paymentPanel = new PaymentPanel(this);
+        keyCodePanel = new KeyCodePanel(this);
+        adminPanel = new AdminPanel(this);
 
         // Add panels to the main panel
         mainPanel.add(loginPanel, "Login");
         mainPanel.add(checkInPanel, "Check In");
         mainPanel.add(requestPanel, "Request");
         mainPanel.add(welcomePanel, "Welcome");
+        mainPanel.add(keyCodePanel, "Key Code");
         mainPanel.add(checkOutPanel, "Check Out");
         mainPanel.add(paymentPanel, "Payment");
+        mainPanel.add(adminPanel, "Admin");
 
         add(mainPanel);
         cardLayout.show(mainPanel, "Login"); // Show the login panel initially
@@ -99,6 +105,10 @@ public class HotelCheckInCheckOutUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
             ui.setVisible(true);
+
+            // Show Admin Login Dialog for testing
+            AdminLoginDialog adminLoginDialog = new AdminLoginDialog(ui, ui);
+            adminLoginDialog.setVisible(true);
         });
     }
 
