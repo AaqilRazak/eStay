@@ -67,7 +67,7 @@ public class CheckInPanel extends JPanel {
         
         JPanel buttonPanel = new JPanel();
         JButton backButton = new JButton("Back to Main Menu");
-        backButton.addActionListener(e -> parent.showPanel("Main Menu"));
+        backButton.addActionListener(e -> parent.showPanel("Login"));
         buttonPanel.add(backButton);
 
         JButton nextButton = new JButton("Next");
@@ -110,5 +110,14 @@ public class CheckInPanel extends JPanel {
             roomKey.append(characters.charAt(random.nextInt(characters.length())));
         }
         return roomKey.toString();
+    }
+
+    public void clearData() {
+        questionLabel1.setText("");
+        questionLabel2.setText("");
+        answerField1.setText("");
+        answerField2.setText("");
+        statusLabel.setText("");
+        bookingCode = null;
     }
 }
