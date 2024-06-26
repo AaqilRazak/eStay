@@ -84,7 +84,7 @@ public class LoginPanel extends JPanel {
     }
 
     private void handleAdminLogin(HotelCheckInCheckOutUI parent) {
-        AdminLoginDialog adminLoginDialog = new AdminLoginDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        AdminLoginDialog adminLoginDialog = new AdminLoginDialog((Frame) SwingUtilities.getWindowAncestor(this), parent);
         adminLoginDialog.setVisible(true);
     }
 }

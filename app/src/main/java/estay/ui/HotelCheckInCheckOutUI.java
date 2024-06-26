@@ -2,7 +2,7 @@ package estay.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import estay.database.BookingDAO;
+import java.sql.Timestamp;
 
 public class HotelCheckInCheckOutUI extends JFrame {
     private CardLayout cardLayout;
@@ -18,14 +18,13 @@ public class HotelCheckInCheckOutUI extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         // Initialize panels
-        JPanel loginPanel = new estay.ui.LoginPanel(this);
+        JPanel loginPanel = new LoginPanel(this);
         JPanel mainMenuPanel = new MainMenuPanel(this);
-        checkInPanel = new CheckInPanel(this);  // Initialize CheckInPanel
+        checkInPanel = new CheckInPanel(this);
         JPanel keyCodePanel = new KeyCodePanel(this);
         JPanel checkOutPanel = new CheckOutPanel(this);
-        requestPanel = new RequestPanel(this);  // Initialize RequestPanel
-        JPanel paymentPanel = new PaymentPanel(this);
-        JPanel adminPanel = new estay.ui.AdminPanel(this);
+        requestPanel = new RequestPanel(this);
+        JPanel adminPanel = new AdminPanel(this); // Add Admin Panel
 
         // Add panels to the main panel
         mainPanel.add(loginPanel, "Login");
@@ -34,8 +33,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
         mainPanel.add(keyCodePanel, "Key Code");
         mainPanel.add(checkOutPanel, "Check Out");
         mainPanel.add(requestPanel, "Request");
-        mainPanel.add(paymentPanel, "Payment");
-        mainPanel.add(adminPanel, "Admin");
+        mainPanel.add(adminPanel, "Admin"); // Add Admin Panel to CardLayout
 
         add(mainPanel);
         cardLayout.show(mainPanel, "Login"); // Show the login panel initially
@@ -45,8 +43,8 @@ public class HotelCheckInCheckOutUI extends JFrame {
         cardLayout.show(mainPanel, panelName);
     }
 
-    public void handleBookingStatus(String bookingStatus, java.sql.Timestamp expiration, String bookingCode) {
-        java.sql.Timestamp currentTime = new java.sql.Timestamp(System.currentTimeMillis());
+    public void handleBookingStatus(String bookingStatus, Timestamp expiration, String bookingCode) {
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         long timeDifference = expiration.getTime() - currentTime.getTime();
         long twoHoursInMillis = 2 * 60 * 60 * 1000;
 
@@ -59,5 +57,16 @@ public class HotelCheckInCheckOutUI extends JFrame {
         } else if (bookingStatus.equals("checked in") && timeDifference <= twoHoursInMillis) {
             showPanel("Check Out");
         }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
+            ui.setVisible(true);
+
+            // Show Admin Login Dialog for testing
+            AdminLoginDialog adminLoginDialog = new AdminLoginDialog(ui, ui);
+            adminLoginDialog.setVisible(true);
+        });
     }
 }

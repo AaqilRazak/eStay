@@ -20,9 +20,11 @@ public class AdminLoginDialog extends JDialog {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private AdminDAO adminDAO;
+    private HotelCheckInCheckOutUI parentUI; // Reference to the main UI
 
-    public AdminLoginDialog(Frame parent) {
+    public AdminLoginDialog(Frame parent, HotelCheckInCheckOutUI parentUI) {
         super(parent, "Admin Login", true);
+        this.parentUI = parentUI; // Initialize the reference
         adminDAO = new AdminDAO();
         
         setLayout(new GridBagLayout());
@@ -76,7 +78,7 @@ public class AdminLoginDialog extends JDialog {
 
         if (adminDAO.validateAdmin(username, password)) {
             JOptionPane.showMessageDialog(this, "Login successful");
-            // Proceed to admin functionalities
+            parentUI.showPanel("Admin"); // Navigate to Admin Panel
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid credentials");
