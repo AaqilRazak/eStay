@@ -1,9 +1,7 @@
 package estay.ui;
 
 import javax.swing.*;
-
 import estay.database.BookingDAO;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,20 +13,58 @@ public class LoginPanel extends JPanel {
 
     public LoginPanel(HotelCheckInCheckOutUI parent) {
         userDAO = new BookingDAO();
-        setLayout(new GridLayout(4, 1));
-        add(new JLabel("Booking Code:"));
-        codeField = new JTextField();
-        add(codeField);
-        add(new JLabel("Last 4 Digits of Credit Card:"));
-        creditCardField = new JTextField();
-        add(creditCardField);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        // Booking Code label and text field
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.EAST;
+        add(new JLabel("Booking Code:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        codeField = new JTextField(15);
+        add(codeField, gbc);
+
+        // Credit Card label and text field
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        add(new JLabel("Last 4 Digits of Credit Card:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        creditCardField = new JTextField(15);
+        add(creditCardField, gbc);
+
+        // Login button
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         JButton loginButton = new JButton("Login");
-        add(loginButton);
+        add(loginButton, gbc);
 
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 handleLogin(parent);
+            }
+        });
+
+        // Admin button
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JButton adminButton = new JButton("Admin");
+        add(adminButton, gbc);
+
+        adminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.showPanel("Admin");
             }
         });
     }
@@ -45,6 +81,4 @@ public class LoginPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Invalid details. Please try again.");
         }
     }
-    
-    
 }

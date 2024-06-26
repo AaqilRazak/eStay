@@ -18,22 +18,24 @@ public class HotelCheckInCheckOutUI extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         // Initialize panels
-        JPanel loginPanel = new LoginPanel(this);
+        JPanel loginPanel = new estay.ui.LoginPanel(this);
         JPanel mainMenuPanel = new MainMenuPanel(this);
-        checkInPanel = new CheckInPanel(this);
-        requestPanel = new RequestPanel(this);
+        checkInPanel = new CheckInPanel(this);  // Initialize CheckInPanel
         JPanel keyCodePanel = new KeyCodePanel(this);
         JPanel checkOutPanel = new CheckOutPanel(this);
+        requestPanel = new RequestPanel(this);  // Initialize RequestPanel
         JPanel paymentPanel = new PaymentPanel(this);
+        JPanel adminPanel = new estay.ui.AdminPanel(this);
 
         // Add panels to the main panel
         mainPanel.add(loginPanel, "Login");
         mainPanel.add(mainMenuPanel, "Main Menu");
         mainPanel.add(checkInPanel, "Check In");
-        mainPanel.add(requestPanel, "Request");
         mainPanel.add(keyCodePanel, "Key Code");
         mainPanel.add(checkOutPanel, "Check Out");
+        mainPanel.add(requestPanel, "Request");
         mainPanel.add(paymentPanel, "Payment");
+        mainPanel.add(adminPanel, "Admin");
 
         add(mainPanel);
         cardLayout.show(mainPanel, "Login"); // Show the login panel initially
@@ -57,12 +59,5 @@ public class HotelCheckInCheckOutUI extends JFrame {
         } else if (bookingStatus.equals("checked in") && timeDifference <= twoHoursInMillis) {
             showPanel("Check Out");
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
-            ui.setVisible(true);
-        });
     }
 }
