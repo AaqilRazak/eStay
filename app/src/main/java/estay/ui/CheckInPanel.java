@@ -95,6 +95,7 @@ public class CheckInPanel extends JPanel {
             statusLabel.setText("Check-in successful!");
             String roomKey = generateRoomKey();
             JOptionPane.showMessageDialog(this, "Check-in successful! Your room key is: " + roomKey);
+            bookingDAO.updateBookingStatus(bookingCode, "checked in"); // Update booking status
             parent.showPanel("Request");
         } else {
             statusLabel.setText("Security answers are incorrect. Please try again.");

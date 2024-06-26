@@ -59,6 +59,18 @@ public class BookingDAO {
         return null;
     }
 
+    public void updateBookingStatus(String bookingCode, String status) {
+        String query = "UPDATE bookings SET status = ? WHERE booking_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, status);
+            preparedStatement.setString(2, bookingCode);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public GuestInfo getSecurityQuestions(String bookingCode) {
         String query = "SELECT name, security_question_1, security_question_2 FROM guests WHERE guest_id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -113,8 +125,8 @@ public class BookingDAO {
 
     public void saveServiceRequest(String bookingCode, String requestType, double price) {
         String findOfferingIdQuery = "SELECT offering_id FROM ServiceOfferings WHERE name = ?";
-        String insertRequestQuery = "INSERT INTO ServiceRequests (booking_id, offering_id, request_date, status, price) VALUES (?, ?, NOW(), 'pending', ?)";
-    
+        String insertRequestQuery = "INSERT INTO servicerequests (booking_id, offering_id, request_date, status, price) VALUES (?, ?, NOW(), 'pending', ?)";
+        
         try (Connection connection = DatabaseConnection.getConnection()) {
             // Step 1: Find the offering_id
             int offeringId = -1;
@@ -129,7 +141,7 @@ public class BookingDAO {
                 }
             }
     
-            // Step 2: Insert into ServiceRequests
+            // Step 2: Insert into servicerequests
             try (PreparedStatement insertRequestStmt = connection.prepareStatement(insertRequestQuery)) {
                 insertRequestStmt.setString(1, bookingCode); // assuming bookingCode is actually booking_id
                 insertRequestStmt.setInt(2, offeringId);
@@ -141,6 +153,7 @@ public class BookingDAO {
             e.printStackTrace();
         }
     }
+    
 
     public void updateAccumulatedCost(String bookingCode, double additionalCost) {
         String query = "UPDATE bookings SET accumulated_cost = accumulated_cost + ? WHERE booking_id = ?";
