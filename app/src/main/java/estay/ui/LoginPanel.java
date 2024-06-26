@@ -1,7 +1,8 @@
 package estay.ui;
 
-import javax.swing.*;
 import estay.database.BookingDAO;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,13 +59,13 @@ public class LoginPanel extends JPanel {
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        JButton adminButton = new JButton("Admin");
+        JButton adminButton = new JButton("Admin Login");
         add(adminButton, gbc);
 
         adminButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.showPanel("Admin");
+                handleAdminLogin(parent);
             }
         });
     }
@@ -80,5 +81,10 @@ public class LoginPanel extends JPanel {
         } else {
             JOptionPane.showMessageDialog(this, "Invalid details. Please try again.");
         }
+    }
+
+    private void handleAdminLogin(HotelCheckInCheckOutUI parent) {
+        AdminLoginDialog adminLoginDialog = new AdminLoginDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        adminLoginDialog.setVisible(true);
     }
 }
