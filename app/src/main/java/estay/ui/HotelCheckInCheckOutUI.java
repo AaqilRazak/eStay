@@ -9,29 +9,30 @@ public class HotelCheckInCheckOutUI extends JFrame {
     private JPanel mainPanel;
     private CheckInPanel checkInPanel;
     private RequestPanel requestPanel;
+    private WelcomePanel welcomePanel;
+    private CheckOutPanel checkOutPanel;
+    private PaymentPanel paymentPanel;
 
     public HotelCheckInCheckOutUI() {
         setTitle("Hotel Check-In and Check-Out System");
-        setSize(600, 400);
+        setSize(800, 600);  // Set initial window size
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
         // Initialize panels
         JPanel loginPanel = new LoginPanel(this);
-        JPanel mainMenuPanel = new MainMenuPanel(this);
         checkInPanel = new CheckInPanel(this);
         requestPanel = new RequestPanel(this);
-        JPanel keyCodePanel = new KeyCodePanel(this);
-        JPanel checkOutPanel = new CheckOutPanel(this);
-        JPanel paymentPanel = new PaymentPanel(this);
+        welcomePanel = new WelcomePanel(this);
+        checkOutPanel = new CheckOutPanel(this);
+        paymentPanel = new PaymentPanel(this);
 
         // Add panels to the main panel
         mainPanel.add(loginPanel, "Login");
-        mainPanel.add(mainMenuPanel, "Main Menu");
         mainPanel.add(checkInPanel, "Check In");
         mainPanel.add(requestPanel, "Request");
-        mainPanel.add(keyCodePanel, "Key Code");
+        mainPanel.add(welcomePanel, "Welcome");
         mainPanel.add(checkOutPanel, "Check Out");
         mainPanel.add(paymentPanel, "Payment");
 
@@ -52,11 +53,15 @@ public class HotelCheckInCheckOutUI extends JFrame {
             checkInPanel.setBookingCode(bookingCode); // Set the booking code before showing the Check In panel
             showPanel("Check In");
         } else if (bookingStatus.equals("checked in") && timeDifference > twoHoursInMillis) {
-            requestPanel.setBookingCode(bookingCode); // Set the booking code before showing the Request panel
-            showPanel("Request");
+            welcomePanel.setBookingCode(bookingCode); // Set the booking code before showing the Welcome panel
+            showPanel("Welcome");
         } else if (bookingStatus.equals("checked in") && timeDifference <= twoHoursInMillis) {
             showPanel("Check Out");
         }
+    }
+
+    public RequestPanel getRequestPanel() {
+        return requestPanel;
     }
 
     public static void main(String[] args) {

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +12,9 @@ public class BookingDAO {
 
     public static class BookingInfo {
         public String status;
-        public java.sql.Timestamp expiration;
+        public Timestamp expiration;
 
-        public BookingInfo(String status, java.sql.Timestamp expiration) {
+        public BookingInfo(String status, Timestamp expiration) {
             this.status = status;
             this.expiration = expiration;
         }
@@ -41,6 +42,24 @@ public class BookingDAO {
         }
     }
 
+    public static class ServiceRequest {
+        public int requestId;
+        public String requestType;
+        public Timestamp requestDate;
+        public String status;
+        public int quantity;
+        public double price;
+
+        public ServiceRequest(int requestId, String requestType, Timestamp requestDate, String status, int quantity, double price) {
+            this.requestId = requestId;
+            this.requestType = requestType;
+            this.requestDate = requestDate;
+            this.status = status;
+            this.quantity = quantity;
+            this.price = price;
+        }
+    }
+
     public BookingInfo validateUser(String bookingCode, String creditCardLast4) {
         String query = "SELECT status, expiration FROM bookings WHERE booking_id = ? AND credit_card_last4 = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -50,7 +69,7 @@ public class BookingDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String status = resultSet.getString("status");
-                java.sql.Timestamp expiration = resultSet.getTimestamp("expiration");
+                Timestamp expiration = resultSet.getTimestamp("expiration");
                 return new BookingInfo(status, expiration);
             }
         } catch (SQLException e) {
@@ -123,9 +142,9 @@ public class BookingDAO {
         return offerings;
     }
 
-    public void saveServiceRequest(String bookingCode, String requestType, double price) {
+    public void saveServiceRequest(String bookingCode, String requestType, double price, int quantity) {
         String findOfferingIdQuery = "SELECT offering_id FROM ServiceOfferings WHERE name = ?";
-        String insertRequestQuery = "INSERT INTO servicerequests (booking_id, offering_id, request_date, status, price) VALUES (?, ?, NOW(), 'pending', ?)";
+        String insertRequestQuery = "INSERT INTO servicerequests (booking_id, offering_id, request_date, status, price, quantity) VALUES (?, ?, NOW(), 'pending', ?, ?)";
         
         try (Connection connection = DatabaseConnection.getConnection()) {
             // Step 1: Find the offering_id
@@ -146,6 +165,7 @@ public class BookingDAO {
                 insertRequestStmt.setString(1, bookingCode); // assuming bookingCode is actually booking_id
                 insertRequestStmt.setInt(2, offeringId);
                 insertRequestStmt.setDouble(3, price);
+                insertRequestStmt.setInt(4, quantity);
                 insertRequestStmt.executeUpdate();
             }
     
@@ -153,7 +173,6 @@ public class BookingDAO {
             e.printStackTrace();
         }
     }
-    
 
     public void updateAccumulatedCost(String bookingCode, double additionalCost) {
         String query = "UPDATE bookings SET accumulated_cost = accumulated_cost + ? WHERE booking_id = ?";
@@ -165,5 +184,51 @@ public class BookingDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void decrementAccumulatedCost(String bookingCode, double cost) {
+        String query = "UPDATE bookings SET accumulated_cost = accumulated_cost - ? WHERE booking_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setDouble(1, cost);
+            preparedStatement.setString(2, bookingCode);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+    public void deleteServiceRequest(int requestId) {
+        String query = "DELETE FROM servicerequests WHERE request_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, requestId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<ServiceRequest> getServiceRequests(String bookingCode) {
+        List<ServiceRequest> requests = new ArrayList<>();
+        String query = "SELECT sr.request_id, so.name AS request_type, sr.request_date, sr.status, sr.quantity, sr.price FROM servicerequests sr JOIN ServiceOfferings so ON sr.offering_id = so.offering_id WHERE sr.booking_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, bookingCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int requestId = resultSet.getInt("request_id");
+                String requestType = resultSet.getString("request_type");
+                Timestamp requestDate = resultSet.getTimestamp("request_date");
+                String status = resultSet.getString("status");
+                int quantity = resultSet.getInt("quantity");
+                double price = resultSet.getDouble("price");
+                requests.add(new ServiceRequest(requestId, requestType, requestDate, status, quantity, price));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return requests;
     }
 }
