@@ -1,12 +1,10 @@
 package estay.ui;
 
 import javax.swing.*;
-
-import estay.database.BookingDAO;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import estay.database.BookingDAO;
 
 public class LoginPanel extends JPanel {
     private JTextField codeField;
@@ -39,12 +37,11 @@ public class LoginPanel extends JPanel {
     
         BookingDAO bookingDAO = new BookingDAO();
         BookingDAO.BookingInfo bookingInfo = bookingDAO.validateUser(bookingCode, creditCardLast4);
-        if (bookingInfo != null) {
+        if (bookingInfo != null && !"checked out".equalsIgnoreCase(bookingInfo.status)) {
+            parent.setCurrentBookingCode(bookingCode);  // Ensure the booking code is set in the parent UI
             parent.handleBookingStatus(bookingInfo.status, bookingInfo.expiration, bookingCode);
         } else {
             JOptionPane.showMessageDialog(this, "Invalid details. Please try again.");
         }
     }
-    
-    
 }

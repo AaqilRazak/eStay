@@ -101,14 +101,46 @@ public class RequestPanel extends JPanel {
         updateRequestDisplay();
     }
 
+    public void clearData() {
+        nameLabel.setText("");
+        for (JCheckBox checkBox : serviceCheckBoxes) {
+            checkBox.setSelected(false);
+        }
+        for (JTextField quantityField : quantityFields) {
+            quantityField.setText("1");
+        }
+        for (JTextField priceField : priceFields) {
+            priceField.setText("");
+        }
+        requestDisplayPanel.removeAll();
+        bookingCode = null;
+    }
+
     private void handleSubmit() {
+        if (bookingCode == null) {
+            JOptionPane.showMessageDialog(this, "Booking code is not set. Cannot submit service request.");
+            return;
+        }
         System.out.println("Submitting service request for booking code: " + bookingCode); // Debug statement
         double totalCost = 0.0;
         for (int i = 0; i < serviceCheckBoxes.length; i++) {
             if (serviceCheckBoxes[i].isSelected()) {
                 String requestType = serviceCheckBoxes[i].getText();
-                int quantity = Integer.parseInt(quantityFields[i].getText());
-                double price = Double.parseDouble(priceFields[i].getText().replace("$", ""));
+                String quantityText = quantityFields[i].getText();
+                String priceText = priceFields[i].getText().replace("$", "");
+    
+                if (quantityText.isEmpty() || !quantityText.matches("\\d+")) {
+                    JOptionPane.showMessageDialog(this, "Invalid quantity for " + requestType + ". Please enter a valid number.");
+                    return;
+                }
+    
+                if (priceText.isEmpty() || !priceText.matches("\\d+(\\.\\d{1,2})?")) {
+                    JOptionPane.showMessageDialog(this, "Invalid price for " + requestType + ". Please enter a valid price.");
+                    return;
+                }
+    
+                int quantity = Integer.parseInt(quantityText);
+                double price = Double.parseDouble(priceText);
                 System.out.println("Selected service: " + requestType + " with price: " + price); // Debug statement
                 bookingDAO.saveServiceRequest(bookingCode, requestType, price, quantity);
                 totalCost += price * quantity;
@@ -118,13 +150,21 @@ public class RequestPanel extends JPanel {
         JOptionPane.showMessageDialog(this, "Thank you! Your request has been submitted.");
         updateRequestDisplay();
     }
+    
 
-    private void updateRequestDisplay() {
+    public void updateRequestDisplay() {
+        if (bookingCode == null) {
+            requestDisplayPanel.removeAll();
+            requestDisplayPanel.revalidate();
+            requestDisplayPanel.repaint();
+            return;
+        }
+
         List<BookingDAO.ServiceRequest> requests = bookingDAO.getServiceRequests(bookingCode);
         requestDisplayPanel.removeAll();
         for (BookingDAO.ServiceRequest request : requests) {
             JPanel requestPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JLabel requestLabel = new JLabel(request.quantity + "x " + request.requestType + " $" + (request.price * request.quantity) + " " + request.status);
+            JLabel requestLabel = new JLabel(request.quantity + "x " + request.requestType + " $" + String.format("%.2f", (request.price * request.quantity)) + " " + request.status);
             if (request.status.equals("pending")) {
                 JButton cancelButton = new JButton("Cancel");
                 cancelButton.addActionListener(e -> {

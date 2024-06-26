@@ -7,16 +7,25 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class BookingDAO {
 
     public static class BookingInfo {
         public String status;
         public Timestamp expiration;
+        public double dayRate;
+        public Timestamp checkInDate;
+        public double accumulatedCost;
+        public String roomId;
 
-        public BookingInfo(String status, Timestamp expiration) {
+        public BookingInfo(String status, Timestamp expiration, double dayRate, Timestamp checkInDate, double accumulatedCost, String roomId) {
             this.status = status;
             this.expiration = expiration;
+            this.dayRate = dayRate;
+            this.checkInDate = checkInDate;
+            this.accumulatedCost = accumulatedCost;
+            this.roomId = roomId;
         }
     }
 
@@ -61,7 +70,7 @@ public class BookingDAO {
     }
 
     public BookingInfo validateUser(String bookingCode, String creditCardLast4) {
-        String query = "SELECT status, expiration FROM bookings WHERE booking_id = ? AND credit_card_last4 = ?";
+        String query = "SELECT status, expiration, day_rate, check_in_date, accumulated_cost, room_id FROM bookings WHERE booking_id = ? AND credit_card_last4 = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, bookingCode);
@@ -70,7 +79,11 @@ public class BookingDAO {
             if (resultSet.next()) {
                 String status = resultSet.getString("status");
                 Timestamp expiration = resultSet.getTimestamp("expiration");
-                return new BookingInfo(status, expiration);
+                double dayRate = resultSet.getDouble("day_rate");
+                Timestamp checkInDate = resultSet.getTimestamp("check_in_date");
+                double accumulatedCost = resultSet.getDouble("accumulated_cost");
+                String roomId = resultSet.getString("room_id");
+                return new BookingInfo(status, expiration, dayRate, checkInDate, accumulatedCost, roomId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -197,7 +210,6 @@ public class BookingDAO {
             e.printStackTrace();
         }
     }
-    
 
     public void deleteServiceRequest(int requestId) {
         String query = "DELETE FROM servicerequests WHERE request_id = ?";
@@ -230,5 +242,26 @@ public class BookingDAO {
             e.printStackTrace();
         }
         return requests;
+    }
+
+    public BookingInfo getBookingDetails(String bookingCode) {
+        String query = "SELECT status, expiration, day_rate, check_in_date, accumulated_cost, room_id FROM bookings WHERE booking_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, bookingCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String status = resultSet.getString("status");
+                Timestamp expiration = resultSet.getTimestamp("expiration");
+                double dayRate = resultSet.getDouble("day_rate");
+                Timestamp checkInDate = resultSet.getTimestamp("check_in_date");
+                double accumulatedCost = resultSet.getDouble("accumulated_cost");
+                String roomId = resultSet.getString("room_id");
+                return new BookingInfo(status, expiration, dayRate, checkInDate, accumulatedCost, roomId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

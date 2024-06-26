@@ -2,16 +2,18 @@ package estay.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Timestamp;
 import estay.database.BookingDAO;
 
 public class HotelCheckInCheckOutUI extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
     private CheckInPanel checkInPanel;
-    private RequestPanel requestPanel;
-    private WelcomePanel welcomePanel;
     private CheckOutPanel checkOutPanel;
     private PaymentPanel paymentPanel;
+    private RequestPanel requestPanel;
+    private WelcomePanel welcomePanel;
+    private String currentBookingCode;
 
     public HotelCheckInCheckOutUI() {
         setTitle("Hotel Check-In and Check-Out System");
@@ -41,11 +43,24 @@ public class HotelCheckInCheckOutUI extends JFrame {
     }
 
     public void showPanel(String panelName) {
+        if (panelName.equals("Login")) {
+            clearUserData();
+        } else if (panelName.equals("Check Out")) {
+            checkOutPanel.setBookingCode(currentBookingCode);
+            checkOutPanel.refreshData();
+        } else if (panelName.equals("Request")) {
+            requestPanel.setBookingCode(currentBookingCode);
+            requestPanel.updateRequestDisplay(); // Ensure request display is updated
+        } else if (panelName.equals("Payment")) {
+            paymentPanel.setBookingCode(currentBookingCode);
+            paymentPanel.refreshData();
+        }
         cardLayout.show(mainPanel, panelName);
     }
 
-    public void handleBookingStatus(String bookingStatus, java.sql.Timestamp expiration, String bookingCode) {
-        java.sql.Timestamp currentTime = new java.sql.Timestamp(System.currentTimeMillis());
+    public void handleBookingStatus(String bookingStatus, Timestamp expiration, String bookingCode) {
+        currentBookingCode = bookingCode;
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         long timeDifference = expiration.getTime() - currentTime.getTime();
         long twoHoursInMillis = 2 * 60 * 60 * 1000;
 
@@ -56,7 +71,23 @@ public class HotelCheckInCheckOutUI extends JFrame {
             welcomePanel.setBookingCode(bookingCode); // Set the booking code before showing the Welcome panel
             showPanel("Welcome");
         } else if (bookingStatus.equals("checked in") && timeDifference <= twoHoursInMillis) {
+            checkOutPanel.setBookingCode(bookingCode); // Set the booking code before showing the Check Out panel
             showPanel("Check Out");
+        }
+    }
+
+    public void setCurrentBookingCode(String bookingCode) {
+        this.currentBookingCode = bookingCode;
+    }
+
+    public JPanel getPanel(String panelName) {
+        switch (panelName) {
+            case "Check Out":
+                return checkOutPanel;
+            case "Payment":
+                return paymentPanel;
+            default:
+                return null;
         }
     }
 
@@ -69,5 +100,13 @@ public class HotelCheckInCheckOutUI extends JFrame {
             HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
             ui.setVisible(true);
         });
+    }
+
+    private void clearUserData() {
+        currentBookingCode = null;
+        checkInPanel.clearData();
+        checkOutPanel.clearData();
+        requestPanel.clearData();
+        paymentPanel.clearData();
     }
 }
