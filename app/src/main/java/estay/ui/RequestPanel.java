@@ -71,10 +71,10 @@ public class RequestPanel extends JPanel {
         gbc.gridwidth = 1;
         inputPanel.add(submitButton, gbc);
 
-        backButton = new JButton("Back to Main Menu");
+        backButton = new JButton("Back to Welcome");
         backButton.addActionListener(e -> {
-            parent.showPanel("Main Menu");
-            updateRequestDisplay(); // Update the request display when navigating back to the main menu
+            parent.showPanel("Welcome");
+            updateRequestDisplay(); // Update the request display when navigating back to the welcome screen
         });
         gbc.gridx = 2;
         inputPanel.add(backButton, gbc);
