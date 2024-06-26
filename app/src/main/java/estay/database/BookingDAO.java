@@ -96,12 +96,12 @@ public class BookingDAO {
 
     public List<ServiceOffering> getServiceOfferings() {
         List<ServiceOffering> offerings = new ArrayList<>();
-        String query = "SELECT request_type, price FROM servicerequests";
+        String query = "SELECT name, price FROM ServiceOfferings";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                String requestType = resultSet.getString("request_type");
+                String requestType = resultSet.getString("name");
                 double price = resultSet.getDouble("price");
                 offerings.add(new ServiceOffering(requestType, price));
             }
@@ -112,13 +112,31 @@ public class BookingDAO {
     }
 
     public void saveServiceRequest(String bookingCode, String requestType, double price) {
-        String query = "INSERT INTO servicerequests (booking_id, request_type, request_date, status, price) VALUES (?, ?, NOW(), 'pending', ?)";
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, bookingCode);
-            preparedStatement.setString(2, requestType);
-            preparedStatement.setDouble(3, price);
-            preparedStatement.executeUpdate();
+        String findOfferingIdQuery = "SELECT offering_id FROM ServiceOfferings WHERE name = ?";
+        String insertRequestQuery = "INSERT INTO ServiceRequests (booking_id, offering_id, request_date, status, price) VALUES (?, ?, NOW(), 'pending', ?)";
+    
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            // Step 1: Find the offering_id
+            int offeringId = -1;
+            try (PreparedStatement findOfferingIdStmt = connection.prepareStatement(findOfferingIdQuery)) {
+                findOfferingIdStmt.setString(1, requestType);
+                try (ResultSet resultSet = findOfferingIdStmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        offeringId = resultSet.getInt("offering_id");
+                    } else {
+                        throw new SQLException("Service offering not found for type: " + requestType);
+                    }
+                }
+            }
+    
+            // Step 2: Insert into ServiceRequests
+            try (PreparedStatement insertRequestStmt = connection.prepareStatement(insertRequestQuery)) {
+                insertRequestStmt.setString(1, bookingCode); // assuming bookingCode is actually booking_id
+                insertRequestStmt.setInt(2, offeringId);
+                insertRequestStmt.setDouble(3, price);
+                insertRequestStmt.executeUpdate();
+            }
+    
         } catch (SQLException e) {
             e.printStackTrace();
         }
