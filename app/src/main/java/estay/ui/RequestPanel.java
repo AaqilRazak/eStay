@@ -60,6 +60,11 @@ public class RequestPanel extends JPanel {
         backButton.addActionListener(e -> parent.showPanel("Main Menu"));
         gbc.gridx = 1;
         add(backButton, gbc);
+
+        // Logout button
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        add(logoutButton);
     }
 
     public void setBookingCode(String bookingCode) {

@@ -96,5 +96,10 @@ public class AdminPanel extends JPanel {
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> parent.showPanel("Login"));
         add(exitButton, gbc);
+
+        // Logout button
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        add(logoutButton, gbc);
     }
 }

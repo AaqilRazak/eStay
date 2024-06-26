@@ -43,5 +43,10 @@ public class PaymentPanel extends JPanel {
         JButton backButton = new JButton("Back to Main Menu");
         backButton.addActionListener(e -> parent.showPanel("Main Menu"));
         add(backButton, gbc);
+
+        // Logout button
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        add(logoutButton, gbc);
     }
 }

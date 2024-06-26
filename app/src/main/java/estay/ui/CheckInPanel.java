@@ -75,6 +75,12 @@ public class CheckInPanel extends JPanel {
         buttonPanel.add(nextButton);
 
         add(buttonPanel, gbc);
+
+        // Logout button
+        JButton logoutButton = new JButton("Back");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        buttonPanel.add(logoutButton);
+
     }
 
     public void setBookingCode(String bookingCode) {

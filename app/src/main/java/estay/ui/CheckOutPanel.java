@@ -32,5 +32,10 @@ public class CheckOutPanel extends JPanel {
         JLabel totalAmountLabel = new JLabel("Total: $0"); // Placeholder total amount
         totalAmountLabel.setFont(new Font("Serif", Font.BOLD, 24));
         add(totalAmountLabel, gbc);
+
+        // Logout button
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        add(logoutButton, gbc);
     }
 }
