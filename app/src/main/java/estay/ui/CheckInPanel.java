@@ -74,13 +74,12 @@ public class CheckInPanel extends JPanel {
         nextButton.addActionListener(e -> handleCheckIn());
         buttonPanel.add(nextButton);
 
-        add(buttonPanel, gbc);
-
         // Logout button
         JButton logoutButton = new JButton("Back");
         logoutButton.addActionListener(e -> parent.showPanel("Login"));
         buttonPanel.add(logoutButton);
 
+        add(buttonPanel, gbc);
     }
 
     public void setBookingCode(String bookingCode) {
@@ -102,7 +101,8 @@ public class CheckInPanel extends JPanel {
             String roomKey = generateRoomKey();
             JOptionPane.showMessageDialog(this, "Check-in successful! Your room key is: " + roomKey);
             bookingDAO.updateBookingStatus(bookingCode, "checked in"); // Update booking status
-            parent.showPanel("Request");
+            parent.getWelcomePanel().setBookingCode(bookingCode); // Ensure the booking code is set in the WelcomePanel
+            parent.showPanel("Welcome");
         } else {
             statusLabel.setText("Security answers are incorrect. Please try again.");
         }

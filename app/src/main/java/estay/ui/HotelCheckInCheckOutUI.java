@@ -85,6 +85,10 @@ public class HotelCheckInCheckOutUI extends JFrame {
         this.currentBookingCode = bookingCode;
     }
 
+    public WelcomePanel getWelcomePanel() {
+        return welcomePanel;
+    }
+
     public JPanel getPanel(String panelName) {
         switch (panelName) {
             case "Check Out":

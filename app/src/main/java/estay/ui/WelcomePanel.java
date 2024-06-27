@@ -3,6 +3,7 @@ package estay.ui;
 import javax.swing.*;
 import java.awt.*;
 import estay.database.BookingDAO;
+import java.security.SecureRandom;
 
 public class WelcomePanel extends JPanel {
     private JLabel wifiLabel;
@@ -10,6 +11,7 @@ public class WelcomePanel extends JPanel {
     private JLabel hoursLabel;
     private JButton serviceRequestButton;
     private JButton checkOutButton;
+    private JButton logoutButton;
     private HotelCheckInCheckOutUI parent;
     private BookingDAO bookingDAO;
     private String bookingCode;
@@ -28,6 +30,7 @@ public class WelcomePanel extends JPanel {
         hoursLabel = new JLabel("<html><b>Hours:</b><br>Check-in: 2:00 PM<br>Check-out: 11:00 AM</html>");
         serviceRequestButton = new JButton("Service Requests");
         checkOutButton = new JButton("Check Out");
+        logoutButton = new JButton("Logout");
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -60,6 +63,10 @@ public class WelcomePanel extends JPanel {
         checkOutButton.addActionListener(e -> parent.showPanel("Check Out"));
         buttonPanel.add(checkOutButton, buttonGbc);
 
+        buttonGbc.gridy = 2;
+        logoutButton.addActionListener(e -> parent.showPanel("Login"));
+        buttonPanel.add(logoutButton, buttonGbc);
+
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
@@ -68,7 +75,25 @@ public class WelcomePanel extends JPanel {
         BookingDAO.GuestInfo guestInfo = bookingDAO.getSecurityQuestions(bookingCode);
         if (guestInfo != null) {
             guestName = guestInfo.name;
-            wifiLabel.setText("Wi-Fi Password: " + guestName.split(" ")[1]); // Assuming last name is the second part
+            if (guestName.split(" ").length > 1) {
+                String lastName = guestName.split(" ")[1];
+                String wifiPassword = lastName + generateRandomCode();
+                wifiLabel.setText("Wi-Fi Password: " + wifiPassword);
+            } else {
+                wifiLabel.setText("Wi-Fi Password: [Last name not available]");
+            }
+        } else {
+            wifiLabel.setText("Wi-Fi Password: [Guest info not available]");
         }
+    }
+
+    private String generateRandomCode() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder code = new StringBuilder(4);
+        for (int i = 0; i < 4; i++) {
+            code.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return code.toString();
     }
 }

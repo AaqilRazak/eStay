@@ -28,29 +28,29 @@ public class PaymentPanel extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
         refundAmountLabel = new JLabel();
+        refundAmountLabel.setFont(new Font("Serif", Font.BOLD, 18));
+        refundAmountLabel.setForeground(new Color(0, 128, 0)); // Green color for refund
         add(refundAmountLabel, gbc);
 
         // Charge label
         gbc.gridy = 1;
         chargeAmountLabel = new JLabel();
-        chargeAmountLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        chargeAmountLabel.setFont(new Font("Serif", Font.BOLD, 18));
+        chargeAmountLabel.setForeground(Color.RED); // Red color for charges
         add(chargeAmountLabel, gbc);
 
         // Back button
         gbc.gridy = 2;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.CENTER;
-        JButton backButton = new JButton("Back to Main Menu");
+        JButton backButton = new JButton("Done");
+        backButton.setFont(new Font("SansSerif", Font.PLAIN, 16));
         backButton.addActionListener(e -> {
             parent.showPanel("Login");
             clearData(); // Clear data when going back to login
         });
         add(backButton, gbc);
 
-        // Logout button
-        JButton logoutButton = new JButton("Logout");
-        logoutButton.addActionListener(e -> parent.showPanel("Login"));
-        add(logoutButton, gbc);
     }
 
     public void setBookingCode(String bookingCode) {
@@ -81,9 +81,9 @@ public class PaymentPanel extends JPanel {
 
             double balance = DEPOSIT_AMOUNT - accumulatedCost;
             if (balance >= 0) {
-                refundAmountLabel.setText(String.format("You will be refunded $%.2f", balance));
+                refundAmountLabel.setText(String.format("<html><span style='color:green;'>You will be refunded $%.2f</span></html>", balance));
             } else {
-                chargeAmountLabel.setText(String.format("You will be charged an additional $%.2f", -balance));
+                chargeAmountLabel.setText(String.format("<html><span style='color:red;'>You will be charged an additional $%.2f</span></html>", -balance));
             }
         }
     }
