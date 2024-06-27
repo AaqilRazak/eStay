@@ -2,7 +2,6 @@ package estay.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import estay.database.BookingDAO;
@@ -22,7 +21,18 @@ public class CheckOutPanel extends JPanel {
         this.bookingDAO = new BookingDAO();
         setLayout(new BorderLayout());
 
+        // Set colors and fonts
+        Color backgroundColor = new Color(0xF9F3DE); // Beige
+        Color labelColor = new Color(0xFF4E62); // Magic Potion
+        Color textAreaBackground = new Color(0xF8DF77); // Jasmine
+        Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
+        Color buttonForeground = Color.WHITE;
+        Font font = new Font("Serif", Font.BOLD, 18);
+
+        setBackground(backgroundColor);
+
         JPanel infoPanel = new JPanel(new GridBagLayout());
+        infoPanel.setBackground(backgroundColor);
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Room number label
@@ -32,12 +42,15 @@ public class CheckOutPanel extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
         roomNumberLabel = new JLabel();
+        roomNumberLabel.setFont(font);
+        roomNumberLabel.setForeground(labelColor);
         infoPanel.add(roomNumberLabel, gbc);
 
         // Total amount label
         gbc.gridy = 1;
         totalAmountLabel = new JLabel();
         totalAmountLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        totalAmountLabel.setForeground(labelColor);
         infoPanel.add(totalAmountLabel, gbc);
 
         // Itemized bill area
@@ -45,11 +58,14 @@ public class CheckOutPanel extends JPanel {
         gbc.gridwidth = 2;
         itemizedBillArea = new JTextArea(10, 30);
         itemizedBillArea.setEditable(false);
+        itemizedBillArea.setBackground(textAreaBackground);
+        itemizedBillArea.setFont(font);
         infoPanel.add(new JScrollPane(itemizedBillArea), gbc);
 
         add(infoPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setBackground(backgroundColor);
         GridBagConstraints buttonGbc = new GridBagConstraints();
         buttonGbc.gridx = 0;
         buttonGbc.gridy = 0;
@@ -57,11 +73,17 @@ public class CheckOutPanel extends JPanel {
         buttonGbc.anchor = GridBagConstraints.LAST_LINE_END;
 
         JButton checkOutButton = new JButton("Check-Out");
+        checkOutButton.setFont(font);
+        checkOutButton.setBackground(buttonBackground);
+        checkOutButton.setForeground(buttonForeground);
         checkOutButton.addActionListener(e -> handleCheckOut());
         buttonPanel.add(checkOutButton, buttonGbc);
 
         buttonGbc.gridy = 1;
         JButton serviceRequestsButton = new JButton("Service Requests");
+        serviceRequestsButton.setFont(font);
+        serviceRequestsButton.setBackground(buttonBackground);
+        serviceRequestsButton.setForeground(buttonForeground);
         serviceRequestsButton.addActionListener(e -> {
             parent.getRequestPanel().setBookingCode(bookingCode); // Pass the booking code to the RequestPanel
             parent.showPanel("Request");

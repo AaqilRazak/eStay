@@ -24,11 +24,23 @@ public class RequestPanel extends JPanel {
         this.bookingDAO = new BookingDAO();
         setLayout(new BorderLayout());
 
+        // Set colors and fonts
+        Color backgroundColor = new Color(0xF9F3DE); // Beige
+        Color textColor = new Color(0xFF4E62); // Magic Potion
+        Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
+        Color buttonForeground = Color.WHITE;
+        Font font = new Font("Serif", Font.BOLD, 18);
+
+        setBackground(backgroundColor);
+
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridBagLayout());
+        inputPanel.setBackground(backgroundColor);
         GridBagConstraints gbc = new GridBagConstraints();
 
         nameLabel = new JLabel();
+        nameLabel.setFont(font);
+        nameLabel.setForeground(textColor);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 4;
@@ -47,11 +59,17 @@ public class RequestPanel extends JPanel {
         for (int i = 0; i < offerings.size(); i++) {
             BookingDAO.ServiceOffering offering = offerings.get(i);
             serviceCheckBoxes[i] = new JCheckBox(offering.requestType);
+            serviceCheckBoxes[i].setFont(font);
+            serviceCheckBoxes[i].setForeground(textColor);
             quantityFields[i] = new JTextField("1");
             quantityFields[i].setPreferredSize(new Dimension(50, 25));
+            quantityFields[i].setFont(font);
+            quantityFields[i].setBackground(new Color(0xF8DF77)); // Jasmine
             priceFields[i] = new JTextField(String.format("$%.2f", offering.price));
             priceFields[i].setEditable(false);
             priceFields[i].setPreferredSize(new Dimension(80, 25));
+            priceFields[i].setFont(font);
+            priceFields[i].setBackground(new Color(0xF8DF77)); // Jasmine
 
             gbc.gridx = 0;
             gbc.gridy = i + 1;
@@ -65,6 +83,9 @@ public class RequestPanel extends JPanel {
         }
 
         submitButton = new JButton("Submit");
+        submitButton.setFont(font);
+        submitButton.setBackground(buttonBackground);
+        submitButton.setForeground(buttonForeground);
         submitButton.addActionListener(e -> handleSubmit());
         gbc.gridx = 1;
         gbc.gridy = offerings.size() + 1;
@@ -72,6 +93,9 @@ public class RequestPanel extends JPanel {
         inputPanel.add(submitButton, gbc);
 
         backButton = new JButton("Back to Welcome");
+        backButton.setFont(font);
+        backButton.setBackground(buttonBackground);
+        backButton.setForeground(buttonForeground);
         backButton.addActionListener(e -> {
             parent.showPanel("Welcome");
             updateRequestDisplay(); // Update the request display when navigating back to the welcome screen
@@ -83,6 +107,7 @@ public class RequestPanel extends JPanel {
 
         requestDisplayPanel = new JPanel();
         requestDisplayPanel.setLayout(new BoxLayout(requestDisplayPanel, BoxLayout.Y_AXIS));
+        requestDisplayPanel.setBackground(backgroundColor);
         JScrollPane scrollPane = new JScrollPane(requestDisplayPanel);
         scrollPane.setPreferredSize(new Dimension(600, 200));
         add(scrollPane, BorderLayout.CENTER);
@@ -150,7 +175,6 @@ public class RequestPanel extends JPanel {
         JOptionPane.showMessageDialog(this, "Thank you! Your request has been submitted.");
         updateRequestDisplay();
     }
-    
 
     public void updateRequestDisplay() {
         if (bookingCode == null) {
@@ -165,8 +189,13 @@ public class RequestPanel extends JPanel {
         for (BookingDAO.ServiceRequest request : requests) {
             JPanel requestPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             JLabel requestLabel = new JLabel(request.quantity + "x " + request.requestType + " $" + String.format("%.2f", (request.price * request.quantity)) + " " + request.status);
+            requestLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+            requestLabel.setForeground(new Color(0xFF4E62)); // Magic Potion
             if (request.status.equals("pending")) {
                 JButton cancelButton = new JButton("Cancel");
+                cancelButton.setFont(new Font("Serif", Font.PLAIN, 16));
+                cancelButton.setBackground(new Color(0x2ECFCA)); // Maximum Blue Green
+                cancelButton.setForeground(Color.WHITE);
                 cancelButton.addActionListener(e -> {
                     bookingDAO.decrementAccumulatedCost(bookingCode, request.price * request.quantity);
                     bookingDAO.deleteServiceRequest(request.requestId);
@@ -177,6 +206,7 @@ public class RequestPanel extends JPanel {
             } else {
                 requestPanel.add(requestLabel);
             }
+            requestPanel.setBackground(new Color(0xF9F3DE)); // Beige
             requestDisplayPanel.add(requestPanel);
         }
         requestDisplayPanel.revalidate();
