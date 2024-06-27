@@ -105,9 +105,8 @@ public class HotelCheckInCheckOutUI extends JFrame {
             HotelCheckInCheckOutUI ui = new HotelCheckInCheckOutUI();
             ui.setVisible(true);
 
-            // Show Admin Login Dialog for testing
-            AdminLoginDialog adminLoginDialog = new AdminLoginDialog(ui, ui);
-            adminLoginDialog.setVisible(true);
+            // Show login panel directly
+            ui.showPanel("Login");
         });
     }
 

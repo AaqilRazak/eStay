@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class BookingDAO {
 
@@ -102,6 +101,19 @@ public class BookingDAO {
             e.printStackTrace();
         }
     }
+
+    public void updateServiceRequestStatus(int requestId, String newStatus) {
+        String query = "UPDATE servicerequests SET status = ? WHERE request_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, newStatus);
+            preparedStatement.setInt(2, requestId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
 
     public GuestInfo getSecurityQuestions(String bookingCode) {
         String query = "SELECT name, security_question_1, security_question_2 FROM guests WHERE guest_id = ?";
@@ -263,5 +275,53 @@ public class BookingDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<BookingInfo> getFilteredBookings(String filterText) {
+        List<BookingInfo> bookings = new ArrayList<>();
+        String query = "SELECT status, expiration, day_rate, check_in_date, accumulated_cost, room_id FROM bookings WHERE booking_id LIKE ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, "%" + filterText + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                BookingInfo info = new BookingInfo(
+                    resultSet.getString("status"),
+                    resultSet.getTimestamp("expiration"),
+                    resultSet.getDouble("day_rate"),
+                    resultSet.getTimestamp("check_in_date"),
+                    resultSet.getDouble("accumulated_cost"),
+                    resultSet.getString("room_id")
+                );
+                bookings.add(info);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bookings;
+    }
+
+    public List<ServiceRequest> getFilteredServiceRequests(String filterText) {
+        List<ServiceRequest> requests = new ArrayList<>();
+        String query = "SELECT sr.request_id, so.name AS request_type, sr.request_date, sr.status, sr.quantity, sr.price FROM servicerequests sr JOIN ServiceOfferings so ON sr.offering_id = so.offering_id WHERE sr.booking_id LIKE ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, "%" + filterText + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                ServiceRequest request = new ServiceRequest(
+                    resultSet.getInt("request_id"),
+                    resultSet.getString("request_type"),
+                    resultSet.getTimestamp("request_date"),
+                    resultSet.getString("status"),
+                    resultSet.getInt("quantity"),
+                    resultSet.getDouble("price")
+                );
+                requests.add(request);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return requests;
     }
 }

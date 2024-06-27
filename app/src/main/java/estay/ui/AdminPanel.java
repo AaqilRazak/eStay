@@ -1,100 +1,159 @@
 package estay.ui;
 
+import estay.database.BookingDAO;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.*;
+import java.util.List;
 
 public class AdminPanel extends JPanel {
-    public AdminPanel(HotelCheckInCheckOutUI parent) {
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
+    private JTable bookingTable;
+    private JTable serviceRequestTable;
+    private JTextField filterField;
+    private BookingDAO bookingDAO;
+    private HotelCheckInCheckOutUI parent;
 
-        // Booking Code Label
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.EAST;
-        add(new JLabel("Booking Code:"), gbc);
+    public AdminPanel(HotelCheckInCheckOutUI mainUI) {
+        this.parent = mainUI;
+        bookingDAO = new BookingDAO();
+        setLayout(new BorderLayout());
 
-        // Search Bar
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL; // Make the search bar span across the width
-        JTextField searchBar = new JTextField(25); // Adjust the width of the search bar
-        searchBar.setToolTipText("Search...");
-        add(searchBar, gbc);
-
-        // Guest Name
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        add(new JLabel("Guest Name: John Doe"), gbc); // Placeholder guest name
-
-        // Room Number
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        add(new JLabel("Room Number: 101"), gbc); // Placeholder room number
-
-        // Current Check-In Status
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        add(new JLabel("Current Checked-in status: Yes"), gbc); // Placeholder status
-
-        // Flip Check-In Status Checkbox
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        JCheckBox flipStatusCheckBox = new JCheckBox("Flip checked-in status");
-        add(flipStatusCheckBox, gbc);
-
-        // List of Pending Services
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        String[] pendingServices = {"Room Service", "Laundry Service", "Spa Service"}; // Placeholder services
-        JList<String> servicesList = new JList<>(pendingServices);
-        JScrollPane servicesScrollPane = new JScrollPane(servicesList);
-        servicesScrollPane.setPreferredSize(new Dimension(200, 150));
-        add(servicesScrollPane, gbc);
-
-        // Dropdown Menu for Actions
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        gbc.weighty = 0;
-        String[] actions = {"Mark as Complete", "Cancel"}; // Placeholder actions
-        JComboBox<String> actionsComboBox = new JComboBox<>(actions);
-        add(actionsComboBox, gbc);
-
-        // Submit Button
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(20, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.CENTER;
-        JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(e -> {
-            // Handle submit action here
+        // Setup filter field
+        JPanel filterPanel = new JPanel(new BorderLayout());
+        filterField = new JTextField();
+        filterField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                updateTableViews(filterField.getText());
+            }
         });
-        add(submitButton, gbc);
+        filterPanel.add(new JLabel("Filter by Booking ID:"), BorderLayout.WEST);
+        filterPanel.add(filterField, BorderLayout.CENTER);
 
-        // Exit Button
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.CENTER;
-        JButton exitButton = new JButton("Exit");
-        exitButton.addActionListener(e -> parent.showPanel("Login"));
-        add(exitButton, gbc);
+        // Setup tables
+        bookingTable = new JTable(new DefaultTableModel(new Object[]{"Booking ID", "Room ID", "Check-In Date", "Check-Out Date", "Status", "Accumulated Cost"}, 0));
+        serviceRequestTable = new JTable(new DefaultTableModel(new Object[]{"Request ID", "Request Type", "Request Date", "Status", "Price", "Quantity"}, 0));
+
+        // Setup buttons
+        JPanel buttonPanel = new JPanel();
+        JButton markRequestCompleteButton = new JButton("Mark Request Complete");
+        JButton deleteRequestButton = new JButton("Delete Request");
+        JButton updateBookingStatusButton = new JButton("Update Booking Status");
+        JButton logoutButton = new JButton("Logout");
+
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.add(markRequestCompleteButton);
+        buttonPanel.add(deleteRequestButton);
+        buttonPanel.add(updateBookingStatusButton);
+        buttonPanel.add(logoutButton);
+
+        markRequestCompleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                markRequestComplete();
+            }
+        });
+
+        deleteRequestButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteRequest();
+            }
+        });
+
+        updateBookingStatusButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateBookingStatus();
+            }
+        });
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.showPanel("Login");
+            }
+        });
+
+        add(filterPanel, BorderLayout.NORTH);
+        add(new JScrollPane(bookingTable), BorderLayout.CENTER);
+        add(new JScrollPane(serviceRequestTable), BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.EAST);
+
+        updateTableViews("");
+    }
+
+    private void updateTableViews(String filterText) {
+        List<BookingDAO.BookingInfo> filteredBookings = bookingDAO.getFilteredBookings(filterText);
+        List<BookingDAO.ServiceRequest> filteredRequests = bookingDAO.getFilteredServiceRequests(filterText);
+
+        DefaultTableModel bookingTableModel = (DefaultTableModel) bookingTable.getModel();
+        bookingTableModel.setRowCount(0);
+
+        DefaultTableModel serviceRequestTableModel = (DefaultTableModel) serviceRequestTable.getModel();
+        serviceRequestTableModel.setRowCount(0);
+
+        // Updating booking table data
+        for (BookingDAO.BookingInfo info : filteredBookings) {
+            bookingTableModel.addRow(new Object[]{
+                info.roomId,
+                info.checkInDate.toString(),
+                info.expiration.toString(), // Using expiration as a substitute for check-out date
+                info.status,
+                info.accumulatedCost
+            });
+        }
+
+        // Updating service request table data
+        for (BookingDAO.ServiceRequest request : filteredRequests) {
+            serviceRequestTableModel.addRow(new Object[]{
+                request.requestId,
+                request.requestType,
+                request.requestDate.toString(),
+                request.status,
+                request.price,
+                request.quantity
+            });
+        }
+
+        bookingTable.setModel(bookingTableModel);
+        serviceRequestTable.setModel(serviceRequestTableModel);
+    }
+
+    private void markRequestComplete() {
+        int selectedRow = serviceRequestTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            int requestId = (int) serviceRequestTable.getValueAt(selectedRow, 0);
+            bookingDAO.updateServiceRequestStatus(requestId, "complete");
+            updateTableViews(filterField.getText());
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a service request to mark as complete.");
+        }
+    }
+
+    private void deleteRequest() {
+        int selectedRow = serviceRequestTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            int requestId = (int) serviceRequestTable.getValueAt(selectedRow, 0);
+            bookingDAO.deleteServiceRequest(requestId);
+            updateTableViews(filterField.getText());
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a service request to delete.");
+        }
+    }
+
+    private void updateBookingStatus() {
+        int selectedRow = bookingTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            String bookingCode = (String) bookingTable.getValueAt(selectedRow, 0);
+            String[] options = {"not checked in", "checked in", "checked out"};
+            String newStatus = (String) JOptionPane.showInputDialog(this, "Select new status for the booking:", "Update Booking Status", JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+            if (newStatus != null && newStatus.length() > 0) {
+                bookingDAO.updateBookingStatus(bookingCode, newStatus);
+                updateTableViews(filterField.getText());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a booking to update the status.");
+        }
     }
 }
