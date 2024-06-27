@@ -48,7 +48,7 @@ public class AdminPanel extends JPanel {
         filterPanel.add(filterField, BorderLayout.CENTER);
 
         // Setup tables
-        bookingTable = new JTable(new DefaultTableModel(new Object[]{"Booking ID", "Room ID", "Check-In Date", "Check-Out Date", "Status", "Accumulated Cost"}, 0));
+        bookingTable = new JTable(new DefaultTableModel(new Object[]{"Room Number", "Check In Date", "Check Out Date", "Status", "Service Charges"}, 0));
         serviceRequestTable = new JTable(new DefaultTableModel(new Object[]{"Request ID", "Request Type", "Request Date", "Status", "Price", "Quantity"}, 0));
 
         // Set table fonts and backgrounds
