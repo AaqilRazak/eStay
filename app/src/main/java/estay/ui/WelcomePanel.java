@@ -20,14 +20,40 @@ public class WelcomePanel extends JPanel {
         this.bookingDAO = new BookingDAO();
         setLayout(new BorderLayout());
 
+        // Set colors and fonts
+        Color backgroundColor = new Color(0xF9F3DE); // Beige
+        Color textColor = new Color(0xFF4E62); // Magic Potion
+        Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
+        Color buttonForeground = Color.WHITE;
+        Font font = new Font("Serif", Font.BOLD, 18);
+
+        setBackground(backgroundColor);
+
         JPanel infoPanel = new JPanel(new GridBagLayout());
+        infoPanel.setBackground(backgroundColor);
         GridBagConstraints gbc = new GridBagConstraints();
 
         wifiLabel = new JLabel();
+        wifiLabel.setFont(font);
+        wifiLabel.setForeground(textColor);
+
         amenitiesLabel = new JLabel("<html><b>Amenities:</b><br>1. Swimming Pool<br>2. Gym<br>3. Free Breakfast</html>");
+        amenitiesLabel.setFont(font);
+        amenitiesLabel.setForeground(textColor);
+
         hoursLabel = new JLabel("<html><b>Hours:</b><br>Check-in: 2:00 PM<br>Check-out: 11:00 AM</html>");
+        hoursLabel.setFont(font);
+        hoursLabel.setForeground(textColor);
+
         serviceRequestButton = new JButton("Service Requests");
+        serviceRequestButton.setFont(font);
+        serviceRequestButton.setBackground(buttonBackground);
+        serviceRequestButton.setForeground(buttonForeground);
+
         checkOutButton = new JButton("Check Out");
+        checkOutButton.setFont(font);
+        checkOutButton.setBackground(buttonBackground);
+        checkOutButton.setForeground(buttonForeground);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -44,6 +70,7 @@ public class WelcomePanel extends JPanel {
         add(infoPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setBackground(backgroundColor);
         GridBagConstraints buttonGbc = new GridBagConstraints();
         buttonGbc.gridx = 0;
         buttonGbc.gridy = 0;

@@ -21,6 +21,15 @@ public class PaymentPanel extends JPanel {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
+        // Set colors and fonts
+        Color backgroundColor = new Color(0xF9F3DE); // Beige
+        Color textColor = new Color(0xFF4E62); // Magic Potion
+        Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
+        Color buttonForeground = Color.WHITE;
+        Font font = new Font("Serif", Font.BOLD, 18);
+
+        setBackground(backgroundColor);
+
         // Refund label
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -28,19 +37,25 @@ public class PaymentPanel extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
         refundAmountLabel = new JLabel();
+        refundAmountLabel.setFont(font);
+        refundAmountLabel.setForeground(textColor);
         add(refundAmountLabel, gbc);
 
         // Charge label
         gbc.gridy = 1;
         chargeAmountLabel = new JLabel();
         chargeAmountLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        chargeAmountLabel.setForeground(textColor);
         add(chargeAmountLabel, gbc);
 
         // Back button
         gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.LINE_START;
         JButton backButton = new JButton("Back to Main Menu");
+        backButton.setFont(font);
+        backButton.setBackground(buttonBackground);
+        backButton.setForeground(buttonForeground);
         backButton.addActionListener(e -> {
             parent.showPanel("Login");
             clearData(); // Clear data when going back to login
@@ -48,7 +63,12 @@ public class PaymentPanel extends JPanel {
         add(backButton, gbc);
 
         // Logout button
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.LINE_END;
         JButton logoutButton = new JButton("Logout");
+        logoutButton.setFont(font);
+        logoutButton.setBackground(buttonBackground);
+        logoutButton.setForeground(buttonForeground);
         logoutButton.addActionListener(e -> parent.showPanel("Login"));
         add(logoutButton, gbc);
     }
