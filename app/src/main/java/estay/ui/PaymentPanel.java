@@ -21,6 +21,15 @@ public class PaymentPanel extends JPanel {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
+        // Set colors and fonts
+        Color backgroundColor = new Color(0xF9F3DE); // Beige
+        Color textColor = new Color(0xFF4E62); // Magic Potion
+        Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
+        Color buttonForeground = Color.WHITE;
+        Font font = new Font("Serif", Font.BOLD, 18);
+
+        setBackground(backgroundColor);
+
         // Refund label
         gbc.gridx = 0;
         gbc.gridy = 0;

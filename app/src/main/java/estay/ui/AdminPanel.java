@@ -19,29 +19,73 @@ public class AdminPanel extends JPanel {
         bookingDAO = new BookingDAO();
         setLayout(new BorderLayout());
 
+        // Set colors and fonts
+        Color backgroundColor = new Color(0xF9F3DE); // Beige
+        Color labelColor = new Color(0xFF4E62); // Magic Potion
+        Color textFieldBackground = new Color(0xF8DF77); // Jasmine
+        Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
+        Color buttonForeground = Color.WHITE;
+        Font font = new Font("Serif", Font.BOLD, 14);
+
+        setBackground(backgroundColor);
+
         // Setup filter field
         JPanel filterPanel = new JPanel(new BorderLayout());
+        filterPanel.setBackground(backgroundColor);
+        JLabel filterLabel = new JLabel("Filter by Booking ID:");
+        filterLabel.setFont(font);
+        filterLabel.setForeground(labelColor);
+        filterPanel.add(filterLabel, BorderLayout.WEST);
+
         filterField = new JTextField();
+        filterField.setFont(font);
+        filterField.setBackground(textFieldBackground);
         filterField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 updateTableViews(filterField.getText());
             }
         });
-        filterPanel.add(new JLabel("Filter by Booking ID:"), BorderLayout.WEST);
         filterPanel.add(filterField, BorderLayout.CENTER);
 
         // Setup tables
         bookingTable = new JTable(new DefaultTableModel(new Object[]{"Booking ID", "Room ID", "Check-In Date", "Check-Out Date", "Status", "Accumulated Cost"}, 0));
         serviceRequestTable = new JTable(new DefaultTableModel(new Object[]{"Request ID", "Request Type", "Request Date", "Status", "Price", "Quantity"}, 0));
 
+        // Set table fonts and backgrounds
+        bookingTable.setFont(font);
+        bookingTable.getTableHeader().setFont(font);
+        bookingTable.getTableHeader().setBackground(buttonBackground);
+        bookingTable.getTableHeader().setForeground(buttonForeground);
+        serviceRequestTable.setFont(font);
+        serviceRequestTable.getTableHeader().setFont(font);
+        serviceRequestTable.getTableHeader().setBackground(buttonBackground);
+        serviceRequestTable.getTableHeader().setForeground(buttonForeground);
+
         // Setup buttons
         JPanel buttonPanel = new JPanel();
-        JButton markRequestCompleteButton = new JButton("Mark Request Complete");
-        JButton deleteRequestButton = new JButton("Delete Request");
-        JButton updateBookingStatusButton = new JButton("Update Booking Status");
-        JButton logoutButton = new JButton("Logout");
-
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setBackground(backgroundColor);
+
+        JButton markRequestCompleteButton = new JButton("Mark Request Complete");
+        markRequestCompleteButton.setFont(font);
+        markRequestCompleteButton.setBackground(buttonBackground);
+        markRequestCompleteButton.setForeground(buttonForeground);
+
+        JButton deleteRequestButton = new JButton("Delete Request");
+        deleteRequestButton.setFont(font);
+        deleteRequestButton.setBackground(buttonBackground);
+        deleteRequestButton.setForeground(buttonForeground);
+
+        JButton updateBookingStatusButton = new JButton("Update Booking Status");
+        updateBookingStatusButton.setFont(font);
+        updateBookingStatusButton.setBackground(buttonBackground);
+        updateBookingStatusButton.setForeground(buttonForeground);
+
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setFont(font);
+        logoutButton.setBackground(buttonBackground);
+        logoutButton.setForeground(buttonForeground);
+
         buttonPanel.add(markRequestCompleteButton);
         buttonPanel.add(deleteRequestButton);
         buttonPanel.add(updateBookingStatusButton);
