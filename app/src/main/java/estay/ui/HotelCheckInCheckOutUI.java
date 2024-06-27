@@ -30,6 +30,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
         welcomePanel = new WelcomePanel(this);
         checkOutPanel = new CheckOutPanel(this);
         paymentPanel = new PaymentPanel(this);
+        adminPanel = new AdminPanel(this);
 
         // Add panels to the main panel
         mainPanel.add(loginPanel, "Login");
