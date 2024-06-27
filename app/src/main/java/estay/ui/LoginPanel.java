@@ -89,4 +89,9 @@ public class LoginPanel extends JPanel {
         AdminLoginDialog adminLoginDialog = new AdminLoginDialog((Frame) SwingUtilities.getWindowAncestor(this), parent);
         adminLoginDialog.setVisible(true);
     }
+
+    public void clearFields() {
+        codeField.setText("");
+        creditCardField.setText("");
+    }
 }

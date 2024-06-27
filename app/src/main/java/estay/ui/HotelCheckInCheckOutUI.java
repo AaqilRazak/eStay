@@ -14,6 +14,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
     private RequestPanel requestPanel;
     private WelcomePanel welcomePanel;
     private AdminPanel adminPanel;
+    private LoginPanel loginPanel;
     private String currentBookingCode;
 
     public HotelCheckInCheckOutUI() {
@@ -24,7 +25,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         // Initialize panels
-        JPanel loginPanel = new LoginPanel(this);
+        loginPanel = new LoginPanel(this);
         checkInPanel = new CheckInPanel(this);
         requestPanel = new RequestPanel(this);
         welcomePanel = new WelcomePanel(this);
@@ -38,7 +39,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
         mainPanel.add(requestPanel, "Request");
         mainPanel.add(welcomePanel, "Welcome");
         mainPanel.add(checkOutPanel, "Check Out");
-        mainPanel.add(requestPanel, "Request");
+        mainPanel.add(paymentPanel, "Payment");
         mainPanel.add(adminPanel, "Admin"); // Add Admin Panel to CardLayout
 
         add(mainPanel);
@@ -48,6 +49,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
     public void showPanel(String panelName) {
         if (panelName.equals("Login")) {
             clearUserData();
+            loginPanel.clearFields(); // Clear fields when showing login panel
         } else if (panelName.equals("Check Out")) {
             checkOutPanel.setBookingCode(currentBookingCode);
             checkOutPanel.refreshData();
