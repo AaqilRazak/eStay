@@ -13,6 +13,7 @@ public class HotelCheckInCheckOutUI extends JFrame {
     private PaymentPanel paymentPanel;
     private RequestPanel requestPanel;
     private WelcomePanel welcomePanel;
+    private AdminPanel adminPanel;
     private String currentBookingCode;
 
     public HotelCheckInCheckOutUI() {
