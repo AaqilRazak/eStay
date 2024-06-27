@@ -1,22 +1,9 @@
 package estay.ui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
 import estay.database.AdminDAO;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class AdminLoginDialog extends JDialog {
     private JTextField usernameField;
@@ -28,19 +15,20 @@ public class AdminLoginDialog extends JDialog {
         super(parent, "Admin Login", true);
         this.parentUI = parentUI; // Initialize the reference
         adminDAO = new AdminDAO();
+        
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        // Set colors and fonts
+        // Set font and colors
+        Font font = new Font("Serif", Font.BOLD, 18);
         Color backgroundColor = new Color(0xF9F3DE); // Beige
         Color labelColor = new Color(0xFF4E62); // Magic Potion
         Color textFieldBackground = new Color(0xF8DF77); // Jasmine
         Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
         Color buttonForeground = Color.WHITE;
-        Font font = new Font("Serif", Font.BOLD, 18);
 
-        setLayout(new GridBagLayout());
         getContentPane().setBackground(backgroundColor);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
 
         // Username label and text field
         gbc.gridx = 0;
@@ -85,12 +73,7 @@ public class AdminLoginDialog extends JDialog {
         loginButton.setForeground(buttonForeground);
         add(loginButton, gbc);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleLogin();
-            }
-        });
+        loginButton.addActionListener(e -> handleLogin());
 
         pack();
         setLocationRelativeTo(parent);
@@ -101,11 +84,40 @@ public class AdminLoginDialog extends JDialog {
         String password = new String(passwordField.getPassword());
 
         if (adminDAO.validateAdmin(username, password)) {
-            JOptionPane.showMessageDialog(this, "Login successful");
+            showCustomMessageDialog("Login successful", JOptionPane.INFORMATION_MESSAGE);
             parentUI.showPanel("Admin"); // Navigate to Admin Panel
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Invalid credentials");
+            showCustomMessageDialog("Invalid credentials", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void showCustomMessageDialog(String message, int messageType) {
+        Font font = new Font("Serif", Font.BOLD, 18);
+        Color labelColor = new Color(0xFF4E62); // Magic Potion
+        Color backgroundColor = new Color(0xF9F3DE); // Beige
+        Color buttonBackground = new Color(0x2ECFCA); // Maximum Blue Green
+        Color buttonForeground = Color.WHITE;
+
+        // Create a custom panel for the message dialog
+        JPanel panel = new JPanel();
+        panel.setBackground(backgroundColor);
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        JLabel messageLabel = new JLabel(message);
+        messageLabel.setFont(font);
+        messageLabel.setForeground(labelColor);
+        panel.add(messageLabel, gbc);
+
+        // Create and customize the message dialog
+        UIManager.put("OptionPane.background", backgroundColor);
+        UIManager.put("Panel.background", backgroundColor);
+        UIManager.put("Button.background", buttonBackground);
+        UIManager.put("Button.foreground", buttonForeground);
+        UIManager.put("Button.font", font);
+
+        JOptionPane.showMessageDialog(this, panel, "Message", messageType);
     }
 }
